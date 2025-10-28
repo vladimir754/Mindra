@@ -1,20 +1,26 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <title>MINDRA — Tu compañera emocional</title>
+  <meta charset="UTF-8">
+  <title>Mindra con Voz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Permissions-Policy" content="microphone=*">
+
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
   <div class="chat-container">
-    <h1>MINDRA 💜</h1>
-    <div class="chat-box" id="chatBox"></div>
-    <div class="input-area">
-      <input type="text" id="userInput" placeholder="Escribe algo..." autocomplete="off">
-      <button id="sendBtn">Enviar</button>
-    </div>
-  </div>
+    <h1>🧠 Mindra - Tu IA con voz</h1>
 
-  <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+    <div id="chat-box"></div>
+
+    <form id="chat-form">
+      <input id="user-input" type="text" placeholder="Escribe o habla..." required>
+      <button type="submit">Enviar</button>
+    </form>
+
+    <button id="voice-btn">🎤 Hablar</button>
+  </div>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>

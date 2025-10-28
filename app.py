@@ -1,43 +1,47 @@
 from flask import Flask, render_template, request, jsonify
-import openai
+from openai import OpenAI
+import os
 
 app = Flask(__name__)
 
-# 💡 Configura tu clave de OpenAI aquí
-openai.api_key = "TU_API_KEY_AQUI"
+# Configura tu clave API (⚠️ nunca la compartas públicamente)
+os.environ["OPENAI_API_KEY"] =""  # 🔒 pon tu clave aquí
+client = OpenAI()
 
-# Historial de conversación (simple)
-chat_history = [
-    {"role": "system", "content": "Eres Mindra, una IA amable y empática que ayuda a las personas a sentirse mejor."}
-]
+conversation = []
 
 @app.route('/')
-def index():
+def home():
     return render_template('index.html')
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
-    user_message = request.json.get("message")
+    global conversation
+    data = request.get_json()
+    user_message = data.get("message", "")
+
     if not user_message:
-        return jsonify({"error": "Mensaje vacío"}), 400
+        return jsonify({"reply": "No entendí tu mensaje 😅"}), 400
 
-    # Agrega mensaje del usuario al historial
-    chat_history.append({"role": "user", "content": user_message})
+    conversation.append({"role": "user", "content": user_message})
 
-    # Llama al modelo GPT
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=chat_history,
-        max_tokens=200,
-        temperature=0.8
-    )
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "Eres Mindra, una IA empática, emocional y amable."},
+                *conversation
+            ]
+        )
 
-    ai_message = response.choices[0].message['content']
+        ai_reply = response.choices[0].message.content
+        conversation.append({"role": "assistant", "content": ai_reply})
+        return jsonify({"reply": ai_reply})
 
-    # Agrega la respuesta de la IA al historial
-    chat_history.append({"role": "assistant", "content": ai_message})
+    except Exception as e:
+        print("Error:", e)
+        return jsonify({"reply": "Hubo un error interno. Intenta de nuevo 🥺"}), 500
 
-    return jsonify({"response": ai_message})
 
 if __name__ == '__main__':
     app.run(debug=True)
