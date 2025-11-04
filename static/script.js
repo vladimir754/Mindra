@@ -1,41 +1,50 @@
-const form = document.getElementById('chat-form');
 const input = document.getElementById('user-input');
-const chatBox = document.getElementById('chat-box');
 const voiceBtn = document.getElementById('voice-btn');
 
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const message = input.value;
-  chatBox.innerHTML += `<div class="user"><b>Tú:</b> ${message}</div>`;
-  input.value = '';
+// Solo se ocupa SpeechRecognition: si no está disponible, deshabilitamos el botón
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (!SpeechRecognition) {
+  // No soportado
+  if (voiceBtn) {
+    voiceBtn.disabled = true;
+    voiceBtn.textContent = '🎤 No soportado';
+  }
+} else {
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'es-ES';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
 
-  const res = await fetch('/api/chat', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({message})
+  voiceBtn.addEventListener('click', () => {
+    try {
+      recognition.start();
+      voiceBtn.textContent = '🎙️ Escuchando...';
+    } catch (err) {
+      console.error('Error al iniciar reconocimiento:', err);
+    }
   });
 
-  const data = await res.json();
-  chatBox.innerHTML += `<div class="ai"><b>Mindra:</b> ${data.reply}</div>`;
-  chatBox.scrollTop = chatBox.scrollHeight;
-});
+  recognition.onresult = (event) => {
+    const text = event.results[0][0].transcript;
+    // Poner el texto en el input y enviar el formulario
+    if (input) input.value = text;
+    // Usar requestSubmit para disparar el handler del formulario (app.js lo maneja)
+    const form = document.getElementById('chat-form');
+    if (form && typeof form.requestSubmit === 'function') {
+      form.requestSubmit();
+    } else if (form) {
+      form.submit();
+    }
+    voiceBtn.textContent = '🎤 Hablar';
+  };
 
-// 🎤 Voz a texto (Speech Recognition)
-const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-recognition.lang = 'es-ES';
+  recognition.onerror = (ev) => {
+    console.warn('Speech recognition error', ev);
+    voiceBtn.textContent = '🎤 Hablar';
+  };
 
-voiceBtn.addEventListener('click', () => {
-  recognition.start();
-  voiceBtn.textContent = "🎙️ Escuchando...";
-});
-
-recognition.onresult = async (event) => {
-  const text = event.results[0][0].transcript;
-  input.value = text;
-  form.requestSubmit();
-  voiceBtn.textContent = "🎤 Hablar";
-};
-
-recognition.onerror = () => {
-  voiceBtn.textContent = "🎤 Hablar";
-};
+  recognition.onend = () => {
+    // Aseguramos que el botón vuelva a su estado
+    voiceBtn.textContent = '🎤 Hablar';
+  };
+}

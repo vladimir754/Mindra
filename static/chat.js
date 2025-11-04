@@ -17,14 +17,20 @@ async function sendMessage() {
   addMessage(text, 'user');
   userInput.value = '';
 
-  const res = await fetch('/api/chat', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ message: text })
-  });
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ message: text })
+    });
 
-  const data = await res.json();
-  addMessage(data.response, 'bot');
+    const data = await res.json();
+    // Usamos 'reply' como clave consistente con el backend
+    addMessage(data.reply || data.response || 'Sin respuesta', 'bot');
+  } catch (err) {
+    addMessage('Error al enviar el mensaje. Comprueba el servidor.', 'bot');
+    console.error('chat send error', err);
+  }
 }
 
 sendBtn.onclick = sendMessage;
