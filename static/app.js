@@ -1,45 +1,43 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("chat-form");
-  const input = document.getElementById("user-input");
-  const chatBox = document.getElementById("chat-box");
-  const synth = window.speechSynthesis; // Motor de voz del navegador
-  
-  function speak(text) {
-    if (synth.speaking) synth.cancel(); // Cancela si ya está hablando
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "es-ES"; // Voz en español
-    utterance.pitch = 1.1;
-    utterance.rate = 1;
-    utterance.volume = 1;
-    synth.speak(utterance);
+const chatBox = document.getElementById("chat-box");
+const chatForm = document.getElementById("chat-form");
+const userInput = document.getElementById("user-input");
+
+function appendMessage(sender, message) {
+  const messageDiv = document.createElement("div");
+  messageDiv.classList.add("message", sender);
+  messageDiv.innerHTML = `<strong>${sender === "user" ? "Tú" : "Mindra"}:</strong> ${message}`;
+  chatBox.appendChild(messageDiv);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+chatForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const message = userInput.value.trim();
+  if (!message) return;
+
+  appendMessage("user", message);
+  userInput.value = "";
+
+  // mensaje temporal mientras piensa
+  const thinkingDiv = document.createElement("div");
+  thinkingDiv.classList.add("message", "mindra");
+  thinkingDiv.textContent = "⏳ Mindra está pensando...";
+  chatBox.appendChild(thinkingDiv);
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+    });
+
+    const data = await response.json();
+    thinkingDiv.remove(); // elimina el mensaje "pensando"
+    appendMessage("mindra", data.reply);
+
+  } catch (error) {
+    thinkingDiv.remove();
+    appendMessage("mindra", "⚠️ Error al conectar con el servidor Flask.");
   }
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const userMessage = input.value.trim();
-    if (!userMessage) return;
-
-    chatBox.innerHTML += `<div class="user-msg"><b>Tú:</b> ${userMessage}</div>`;
-    input.value = "";
-
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMessage })
-      });
-
-      const data = await res.json();
-      const reply = data.reply || "No pude responder 😅";
-
-      chatBox.innerHTML += `<div class="bot-msg"><b>Mindra:</b> ${reply}</div>`;
-      chatBox.scrollTop = chatBox.scrollHeight;
-
-      // 🗣️ Hablar respuesta
-      speak(reply);
-
-    } catch (err) {
-      chatBox.innerHTML += `<div class="bot-msg error">Error al conectar con el servidor 😢</div>`;
-    }
-  });
 });
