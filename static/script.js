@@ -1,70 +1,45 @@
 const chatBox = document.getElementById("chat-box");
+const chatForm = document.getElementById("chat-form");
 const input = document.getElementById("user-input");
-const sendBtn = document.getElementById("send-btn");
+const voiceSwitch = document.getElementById("voice-switch");
 
-function appendMessage(sender, text) {
-  const msg = document.createElement("div");
-  msg.classList.add("message", sender);
-  msg.textContent = text;
-  chatBox.appendChild(msg);
-  chatBox.scrollTop = chatBox.scrollHeight;
+let ttsEnabled = false;
+
+voiceSwitch.addEventListener("change", () => {
+    ttsEnabled = voiceSwitch.checked;
+});
+
+function appendMessage(sender, message) {
+    const div = document.createElement("div");
+    div.classList.add("message", sender);
+    div.innerHTML = `<strong>${sender === "user" ? "Tú" : "Mindra"}:</strong> ${message}`;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// 🎤 Configurar reconocimiento de voz
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-const recognition = new SpeechRecognition();
-recognition.lang = "es-ES";
-recognition.continuous = false;
-
-recognition.onresult = (event) => {
-  const text = event.results[0][0].transcript;
-  appendMessage("user", text);
-  sendToMindra(text);
-};
-
-recognition.onend = () => recognition.start();
-
-// 🔊 Mindra habla
 function speak(text) {
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "es-ES";
-  utterance.rate = 1;
-  utterance.pitch = 1.1;
-  speechSynthesis.speak(utterance);
+    if (!ttsEnabled) return;
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = "es-ES";
+    speechSynthesis.speak(utter);
 }
 
-async function sendToMindra(message) {
-  appendMessage("bot", "⏳ Mindra está pensando...");
+chatForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  try {
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message })
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    appendMessage("user", msg);
+    input.value = "";
+
+    const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg })
     });
 
-    const data = await res.json();
-    chatBox.lastChild.remove();
-    appendMessage("bot", data.reply);
+    const data = await response.json();
+    appendMessage("mindra", data.reply);
     speak(data.reply);
-  } catch (err) {
-    console.error("Error:", err);
-    chatBox.lastChild.remove();
-    appendMessage("bot", "⚠️ Error al comunicar con Mindra (servidor no disponible).");
-  }
-}
-
-sendBtn.addEventListener("click", () => {
-  const msg = input.value.trim();
-  if (!msg) return;
-  appendMessage("user", msg);
-  input.value = "";
-  sendToMindra(msg);
 });
-
-input.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") sendBtn.click();
-});
-
-// 🔄 Iniciar reconocimiento
-recognition.start();

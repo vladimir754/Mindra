@@ -1,66 +1,55 @@
-// Esperar a que cargue el DOM
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("chat-form");
-  const input = document.getElementById("user-input");
-  const chatBox = document.getElementById("chat-box");
-  const voiceBtn = document.getElementById("voice-btn");
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-  // Enviar texto al servidor Flask
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const message = input.value.trim();
-    if (!message) return;
+const auth = getAuth();
 
-    appendMessage("Tú", message);
-    input.value = "";
+const chatBox = document.getElementById("chat-box");
+const chatForm = document.getElementById("chat-form");
+const input = document.getElementById("user-input");
+const voiceSwitch = document.getElementById("voice-switch");
 
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message }),
-      });
+let ttsEnabled = false;
 
-      const data = await response.json();
-      appendMessage("Mindra", data.reply);
-      speak(data.reply); // 🔊 Lee la respuesta en voz alta
-    } catch (err) {
-      appendMessage("Error", "No se pudo conectar con el servidor Flask.");
-    }
-  });
+voiceSwitch.addEventListener("change", () => {
+    ttsEnabled = voiceSwitch.checked;
+});
 
-  // Mostrar mensajes en pantalla
-  function appendMessage(sender, text) {
+function appendMessage(sender, message) {
     const div = document.createElement("div");
-    div.classList.add(sender === "Tú" ? "user" : "bot");
-    div.innerHTML = `<b>${sender}:</b> ${text}`;
+    div.classList.add("message", sender);
+    div.innerHTML = `<strong>${sender === "user" ? "Tú" : "Mindra"}:</strong> ${message}`;
     chatBox.appendChild(div);
     chatBox.scrollTop = chatBox.scrollHeight;
-  }
+}
 
-  // 🎤 Hablar con el micrófono (Speech Recognition)
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (SpeechRecognition) {
-    const recognition = new SpeechRecognition();
-    recognition.lang = "es-ES";
+function speak(text) {
+    if (!ttsEnabled) return;
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = "es-ES";
+    speechSynthesis.speak(utter);
+}
 
-    voiceBtn.addEventListener("click", () => {
-      recognition.start();
+chatForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    // SI NO ESTÁ LOGEADO → BLOQUEAR
+    if (!auth.currentUser) {
+        appendMessage("mindra", "Debes iniciar sesión para continuar.");
+        return;
+    }
+
+    appendMessage("user", msg);
+    input.value = "";
+
+    const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg })
     });
 
-    recognition.onresult = (event) => {
-      const voiceText = event.results[0][0].transcript;
-      input.value = voiceText;
-      form.dispatchEvent(new Event("submit"));
-    };
-  } else {
-    voiceBtn.disabled = true;
-  }
-
-  // 🗣️ Función para leer en voz alta las respuestas
-  function speak(text) {
-    const speech = new SpeechSynthesisUtterance(text);
-    speech.lang = "es-ES";
-    window.speechSynthesis.speak(speech);
-  }
+    const data = await response.json();
+    appendMessage("mindra", data.reply);
+    speak(data.reply);
 });
