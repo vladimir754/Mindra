@@ -1,54 +1,46 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mindra — Chat</title>
-
-  <!-- CSS -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mindra Chat</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
-
   <div class="chat-container">
+    <h1 class="title">🤖 Mindra</h1>
+    <p class="subtitle">Tu asistente tranquilo</p>
 
-    <header class="header">
-      <h1 class="brand">Mindra</h1>
-      <p class="subtitle">Tu espacio tranquilo para conversar</p>
-    </header>
+    <div id="chat-box" class="chat-box"></div>
 
-    <main class="card">
-      <div id="chat-box" class="chat-box" aria-live="polite"></div>
-
-      <form id="chat-form" class="chat-form" aria-label="Enviar mensaje">
-        <label for="user-input" class="sr-only">Escribe tu mensaje</label>
-        <input id="user-input" type="text" placeholder="Escribe un mensaje..." autocomplete="off" />
-        <button id="send-btn" type="submit" class="btn-send">Enviar</button>
-      </form>
-    </main>
-
+    <form id="chat-form" class="chat-form">
+      <input
+        type="text"
+        id="user-input"
+        placeholder="Escribe algo aquí..."
+        autocomplete="off"
+      />
+      <button type="submit">Enviar</button>
+    </form>
   </div>
 
-  <!-- Popup de autenticación (oculto por defecto) -->
-  <div id="auth-popup" class="popup hidden" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="popup-card">
-      <h2>Inicia sesión o regístrate</h2>
+  <!-- POPUP LOGIN -->
+  <div id="auth-popup" class="popup hidden" aria-hidden="true">
+    <div class="popup-content">
+      <span id="popup-close" class="close-btn">✖</span>
 
-      <input id="email" type="email" placeholder="Correo" />
-      <input id="password" type="password" placeholder="Contraseña" />
+      <h2>🔐 Iniciar sesión</h2>
 
-      <div class="popup-actions">
-        <button id="login-btn" class="btn primary">Entrar</button>
-        <button id="register-btn" class="btn secondary">Crear cuenta</button>
-      </div>
+      <input type="email" id="email" placeholder="Correo electrónico">
+      <input type="password" id="password" placeholder="Contraseña">
 
-      <p class="popup-note">Necesitas una cuenta para chatear con Mindra.</p>
-      <button id="popup-close" class="popup-close" title="Cerrar">✕</button>
+      <button id="login-btn" class="popup-btn">Iniciar Sesión</button>
+      <button id="register-btn" class="popup-btn secondary">Registrarse</button>
     </div>
   </div>
 
-  <!-- Firebase (module) y app -->
-  <script type="module" src="{{ url_for('static', filename='js/firebase.js') }}"></script>
-  <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>
+  <script src="{{ url_for('static', filename='firebase.js') }}" type="module"></script>
+  <script src="{{ url_for('static', filename='app.js') }}" type="module"></script>
 </body>
 </html>

@@ -18,23 +18,23 @@ function appendMessage(sender, message) {
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// bienvenida inicial
+// Mensaje inicial
 appendMessage("mindra", "✨ Hola, soy Mindra. Estoy aquí para escucharte. ¿Cómo te sientes hoy?");
 
-// manejo popup
-function openPopup() { popup.classList.remove("hidden"); popup.setAttribute("aria-hidden", "false"); }
-function closePopup() { popup.classList.add("hidden"); popup.setAttribute("aria-hidden", "true"); }
+// popup
+function openPopup() { popup.classList.remove("hidden"); }
+function closePopup() { popup.classList.add("hidden"); }
+
 popupClose.addEventListener("click", closePopup);
 
-// escuchar estado de autenticación
+// estado login
 onAuthStateChanged(auth, (user) => {
   if (user) {
     logged = true;
     closePopup();
-    appendMessage("mindra", "😊 ¡Bienvenido! Ya puedes seguir escribiendo.");
+    appendMessage("mindra", "😊 ¡Bienvenido! Ya puedes continuar hablando conmigo.");
   } else {
     logged = false;
-    // si prefieres abrir el popup automáticamente al cargar: openPopup();
   }
 });
 
@@ -49,15 +49,14 @@ chatForm.addEventListener("submit", async (e) => {
 
   if (!logged) {
     openPopup();
-    appendMessage("mindra", "🔐 Para continuar, por favor inicia sesión o regístrate.");
+    appendMessage("mindra", "🔐 Para continuar, inicia sesión o regístrate.");
     return;
   }
 
-  // mostrar pensando
-  const thinkingDiv = document.createElement("div");
-  thinkingDiv.classList.add("message", "mindra");
-  thinkingDiv.textContent = "⏳ Mindra está pensando...";
-  chatBox.appendChild(thinkingDiv);
+  const thinking = document.createElement("div");
+  thinking.classList.add("message", "mindra");
+  thinking.textContent = "⏳ Mindra está pensando...";
+  chatBox.appendChild(thinking);
   chatBox.scrollTop = chatBox.scrollHeight;
 
   try {
@@ -66,25 +65,23 @@ chatForm.addEventListener("submit", async (e) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message })
     });
+
     const data = await res.json();
-    thinkingDiv.remove();
+    thinking.remove();
     appendMessage("mindra", data.reply);
   } catch (err) {
-    thinkingDiv.remove();
+    thinking.remove();
     appendMessage("mindra", "⚠️ Error al conectar con el servidor.");
-    console.error(err);
   }
 });
 
 // login
 loginBtn.addEventListener("click", async () => {
-  const email = document.getElementById("email").value.trim();
-  const pass = document.getElementById("password").value.trim();
-  if (!email || !pass) { alert("Ingresa correo y contraseña"); return; }
+  const email = document.getElementById("email").value;
+  const pass = document.getElementById("password").value;
 
   try {
     await signInWithEmailAndPassword(auth, email, pass);
-    // onAuthStateChanged se encargará de cerrar popup y marcar logged
   } catch (err) {
     alert("Error al iniciar sesión: " + err.message);
   }
@@ -92,14 +89,13 @@ loginBtn.addEventListener("click", async () => {
 
 // registro
 registerBtn.addEventListener("click", async () => {
-  const email = document.getElementById("email").value.trim();
-  const pass = document.getElementById("password").value.trim();
-  if (!email || !pass) { alert("Ingresa correo y contraseña"); return; }
+  const email = document.getElementById("email").value;
+  const pass = document.getElementById("password").value;
 
   try {
     await createUserWithEmailAndPassword(auth, email, pass);
-    alert("Cuenta creada. Inicia sesión ahora.");
+    alert("Cuenta creada. Ahora inicia sesión.");
   } catch (err) {
-    alert("Error al registrar: " + err.message);
+    alert("Error al registrarse: " + err.message);
   }
 });
