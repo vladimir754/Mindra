@@ -1,13 +1,6 @@
 const chatBox = document.getElementById("chat-box");
 const chatForm = document.getElementById("chat-form");
 const input = document.getElementById("user-input");
-const voiceSwitch = document.getElementById("voice-switch");
-
-let ttsEnabled = false;
-
-voiceSwitch.addEventListener("change", () => {
-    ttsEnabled = voiceSwitch.checked;
-});
 
 function appendMessage(sender, message) {
     const div = document.createElement("div");
@@ -15,13 +8,6 @@ function appendMessage(sender, message) {
     div.innerHTML = `<strong>${sender === "user" ? "Tú" : "Mindra"}:</strong> ${message}`;
     chatBox.appendChild(div);
     chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-function speak(text) {
-    if (!ttsEnabled) return;
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = "es-ES";
-    speechSynthesis.speak(utter);
 }
 
 chatForm.addEventListener("submit", async (e) => {
@@ -33,6 +19,11 @@ chatForm.addEventListener("submit", async (e) => {
     appendMessage("user", msg);
     input.value = "";
 
+    const loading = document.createElement("div");
+    loading.classList.add("message", "mindra");
+    loading.textContent = "⏳ Mindra está pensando...";
+    chatBox.appendChild(loading);
+
     const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -40,6 +31,6 @@ chatForm.addEventListener("submit", async (e) => {
     });
 
     const data = await response.json();
+    loading.remove();
     appendMessage("mindra", data.reply);
-    speak(data.reply);
 });

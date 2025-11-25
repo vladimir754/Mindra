@@ -1,46 +1,64 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mindra Chat</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mindra — Tu apoyo emocional 💜✨</title>
+
+  <!-- Cargar CSS correctamente con Flask -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="static/css/styles.css">
 </head>
 
 <body>
+
   <div class="chat-container">
-    <h1 class="title">🤖 Mindra</h1>
-    <p class="subtitle">Tu asistente tranquilo</p>
+    
+    <div class="chat-header">
+      <h1>💜 Mindra</h1>
+      <p class="subtitle">Tu apoyo emocional, siempre contigo ✨</p>
+    </div>
 
     <div id="chat-box" class="chat-box"></div>
 
     <form id="chat-form" class="chat-form">
-      <input
-        type="text"
-        id="user-input"
-        placeholder="Escribe algo aquí..."
-        autocomplete="off"
-      />
-      <button type="submit">Enviar</button>
+      <input id="user-input" type="text" placeholder="Escribe tu mensaje con confianza 💬💜">
+      <button type="submit" class="send-btn">➤</button>
     </form>
+
   </div>
 
-  <!-- POPUP LOGIN -->
-  <div id="auth-popup" class="popup hidden" aria-hidden="true">
-    <div class="popup-content">
-      <span id="popup-close" class="close-btn">✖</span>
+  <script>
+    const chatBox = document.getElementById("chat-box");
+    const chatForm = document.getElementById("chat-form");
+    const userInput = document.getElementById("user-input");
 
-      <h2>🔐 Iniciar sesión</h2>
+    function appendMessage(sender, message) {
+      const msg = document.createElement("div");
+      msg.classList.add("message", sender);
+      msg.innerHTML = message;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
 
-      <input type="email" id="email" placeholder="Correo electrónico">
-      <input type="password" id="password" placeholder="Contraseña">
+    chatForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const text = userInput.value.trim();
+      if (!text) return;
 
-      <button id="login-btn" class="popup-btn">Iniciar Sesión</button>
-      <button id="register-btn" class="popup-btn secondary">Registrarse</button>
-    </div>
-  </div>
+      appendMessage("user", "💬 Tú:<br>" + text);
+      userInput.value = "";
 
-  <script src="{{ url_for('static', filename='firebase.js') }}" type="module"></script>
-  <script src="{{ url_for('static', filename='app.js') }}" type="module"></script>
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ message: text })
+      });
+
+      const data = await response.json();
+      appendMessage("mindra", "💜 Mindra:<br>" + data.reply);
+    });
+  </script>
+
 </body>
 </html>
