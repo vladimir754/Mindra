@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mindra — Inicio</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+</head>
+<body>
+
+    <!-- Fondo animado -->
+    <div class="background"></div>
+
+    <div class="home-card">
+        <h1 class="title">💜 Bienvenido a Mindra</h1>
+        <p class="subtitle">Tu espacio seguro para hablar, desahogarte y sentirte acompañado.</p>
+
+        <button class="btn-chat" onclick="window.location.href='/chat'">
+            Entrar al Chat 🌙
+        </button>
+    </div>
+
+</body>
+</html>

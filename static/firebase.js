@@ -1,22 +1,36 @@
-// firebase.js
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-import { 
-  getAuth,
-  signInWithEmailAndPassword as _signIn,
-  createUserWithEmailAndPassword as _createUser,
-  onAuthStateChanged as _onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+// firebase.js (versión final y funcional)
 
+// Cargar Firebase desde CDN
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+// --- TU CONFIG ---
 const firebaseConfig = {
   apiKey: "AIzaSyB4qio3SPPwz6k51YSWQPULfMXbJSblBOU",
   authDomain: "mindra-8f3bb.firebaseapp.com",
   projectId: "mindra-8f3bb",
-  storageBucket: "mindra-8f3bb.appspot.com",   // ← CORREGIDO
+  storageBucket: "mindra-8f3bb.appspot.com",
   messagingSenderId: "184399274274",
   appId: "1:184399274274:web:324bf3495b03bfc368857b"
 };
 
+// Inicializar Firebase
 const app = initializeApp(firebaseConfig);
+
+// Inicializar AUTH
 const auth = getAuth(app);
 
-export { auth, _signIn as signInWithEmailAndPassword, _createUser as createUserWithEmailAndPassword, _onAuthStateChanged as onAuthStateChanged };
+// Exportar funciones para usarlas en auth.js
+export {
+  auth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+};

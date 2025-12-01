@@ -3,62 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mindra — Tu apoyo emocional 💜✨</title>
+  <title>Mindra — Chat</title>
 
-  <!-- Cargar CSS correctamente con Flask -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link rel="stylesheet" href="static/css/styles.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 
 <body>
 
   <div class="chat-container">
-    
-    <div class="chat-header">
-      <h1>💜 Mindra</h1>
-      <p class="subtitle">Tu apoyo emocional, siempre contigo ✨</p>
-    </div>
+    <h2 id="title">Mindra 💜</h2>
 
     <div id="chat-box" class="chat-box"></div>
 
-    <form id="chat-form" class="chat-form">
-      <input id="user-input" type="text" placeholder="Escribe tu mensaje con confianza 💬💜">
-      <button type="submit" class="send-btn">➤</button>
+    <form id="chat-form" class="chat-form" autocomplete="off">
+      <input 
+        id="user-input" 
+        type="text" 
+        placeholder="Escribe algo…" 
+        spellcheck="false"
+        autofocus
+      />
+      <button type="submit">Enviar</button>
     </form>
-
   </div>
 
-  <script>
-    const chatBox = document.getElementById("chat-box");
-    const chatForm = document.getElementById("chat-form");
-    const userInput = document.getElementById("user-input");
-
-    function appendMessage(sender, message) {
-      const msg = document.createElement("div");
-      msg.classList.add("message", sender);
-      msg.innerHTML = message;
-      chatBox.appendChild(msg);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    chatForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const text = userInput.value.trim();
-      if (!text) return;
-
-      appendMessage("user", "💬 Tú:<br>" + text);
-      userInput.value = "";
-
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ message: text })
-      });
-
-      const data = await response.json();
-      appendMessage("mindra", "💜 Mindra:<br>" + data.reply);
-    });
-  </script>
+  <script src="{{ url_for('static', filename='chat.js') }}"></script>
 
 </body>
 </html>

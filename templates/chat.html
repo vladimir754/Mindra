@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mindra Chat</title>
+
+    <!-- CSS del chat -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+</head>
+
+<body>
+
+    <!-- Fondo animado morado -->
+    <div class="animated-bg"></div>
+
+    <!-- CONTENEDOR DEL CHAT -->
+    <div class="chat-wrapper fadeIn">
+
+        <div class="chat-header">
+            <span class="heart">💜</span> Mindra
+        </div>
+
+        <div id="messages" class="messages"></div>
+
+        <div class="chat-input-area">
+            <input type="text" id="user-input" placeholder="Escribe algo bonito…" autocomplete="off">
+            <button id="send-btn" class="send-btn">➤</button>
+        </div>
+
+    </div>
+
+    <!-- SCRIPT DEL CHAT -->
+    <script>
+        const box = document.getElementById("messages");
+        const input = document.getElementById("user-input");
+        const btn = document.getElementById("send-btn");
+
+        function addMessage(text, sender) {
+            const bubble = document.createElement("div");
+            bubble.className = sender === "user" ? "msg-user" : "msg-mindra";
+            bubble.innerText = text;
+
+            box.appendChild(bubble);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        btn.onclick = sendMessage;
+
+        input.addEventListener("keypress", e => {
+            if (e.key === "Enter") sendMessage();
+        });
+
+        async function sendMessage() {
+            const text = input.value.trim();
+            if (!text) return;
+
+            addMessage(text, "user");
+            input.value = "";
+
+            const res = await fetch("/api/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: text })
+            });
+
+            const data = await res.json();
+            addMessage(data.reply, "mindra");
+        }
+    </script>
+
+</body>
+</html>

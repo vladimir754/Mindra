@@ -1,0 +1,79 @@
+/* --- PURPLE ANIMATED BACKGROUND --- */
+body {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Poppins", sans-serif;
+}
+
+.background {
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    background: linear-gradient(135deg, #7b2ff7, #df73ff, #8d5cff, #c39dff);
+    background-size: 400% 400%;
+    animation: moveGradient 12s ease infinite;
+    filter: blur(40px);
+    z-index: -1;
+}
+
+@keyframes moveGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* --- CARD --- */
+.home-card {
+    width: 420px;
+    padding: 40px 30px;
+    text-align: center;
+    border-radius: 18px;
+
+    background: rgba(255, 255, 255, 0.20);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    box-shadow: 0 10px 35px rgba(0,0,0,0.25);
+    animation: fadeUp 0.9s ease;
+    color: white;
+}
+
+@keyframes fadeUp {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.title {
+    font-size: 32px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 12px #d7b1ff;
+}
+
+.subtitle {
+    margin-top: 0;
+    font-size: 16px;
+    opacity: 0.9;
+    margin-bottom: 30px;
+}
+
+/* --- BOTÓN --- */
+.btn-chat {
+    width: 100%;
+    padding: 15px;
+    background: #8a2be2;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 17px;
+    cursor: pointer;
+    transition: 0.35s;
+}
+
+.btn-chat:hover {
+    background: #a15bff;
+    transform: scale(1.05);
+}

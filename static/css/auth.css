@@ -1,0 +1,117 @@
+/* ===== RESET ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #5a00a0, #a400ff);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* ===== ANIMATED BACKGROUND ORBS ===== */
+.orb {
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    filter: blur(80px);
+    animation: float 7s infinite ease-in-out;
+}
+
+#orb1 { top: 5%; left: 10%; }
+#orb2 { bottom: 5%; right: 10%; animation-delay: 3s; }
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-40px); }
+    100% { transform: translateY(0px); }
+}
+
+/* ===== FORM CONTAINER ===== */
+.form-container {
+    width: 380px;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.15);
+
+    /* 👇 Corregido para soporte universal */
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    animation: pop 0.7s ease;
+}
+
+@keyframes pop {
+    from { transform: scale(0.85); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+h2 {
+    text-align: center;
+    color: #fff;
+    margin-bottom: 20px;
+    font-size: 28px;
+}
+
+/* ===== INPUTS ===== */
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0 18px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+    outline: none;
+    transition: 0.3s;
+}
+
+input:focus {
+    background: rgba(255,255,255,0.4);
+    transform: scale(1.03);
+}
+
+/* ===== BUTTONS ===== */
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 10px;
+    background: #9b00f5;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #b833ff;
+    transform: scale(1.05);
+}
+
+/* ===== LINKS ===== */
+.link {
+    color: #fff;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.link a {
+    color: #ffd8ff;
+    text-decoration: none;
+}
+
+.link a:hover {
+    text-decoration: underline;
+}

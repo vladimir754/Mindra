@@ -1,145 +1,120 @@
-/* ======= FONDO MORADO DIFUMINADO ======= */
+/* --- ANIMATED PURPLE BACKGROUND --- */
 body {
     margin: 0;
-    padding: 0;
     height: 100vh;
+    overflow: hidden;
     font-family: "Poppins", sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: white;
-
-    background: linear-gradient(135deg, #2e005f, #4b0082, #7b1fa2, #9c27b0);
-    background-size: 300% 300%;
-    animation: gradientMove 10s ease infinite;
 }
 
-@keyframes gradientMove {
+.background {
+    position: absolute;
+    width: 140%;
+    height: 140%;
+    background: linear-gradient(135deg, #7b2ff7, #df73ff, #8d5cff, #c39dff);
+    background-size: 400% 400%;
+    animation: gradientFlow 12s ease infinite;
+    z-index: -1;
+    filter: blur(50px);
+}
+
+@keyframes gradientFlow {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
 
-/* ======= CONTENEDOR PRINCIPAL ======= */
-.chat-container {
-    width: 450px;
-    height: 650px;
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
-    box-shadow: 0 8px 35px rgba(0, 0, 0, 0.4);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    border: 2px solid rgba(255,255,255,0.25);
-}
+/* --- LOGIN CARD --- */
+.login-card {
+    width: 360px;
+    padding: 30px;
+    border-radius: 15px;
 
-/* ======= HEADER ======= */
-.chat-header {
+    background: rgba(255, 255, 255, 0.25);
+
+    /* efectos solo si el navegador lo soporta */
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
     text-align: center;
-    padding: 20px;
-    background: rgba(255,255,255,0.15);
-    border-bottom: 1px solid rgba(255,255,255,0.2);
+    animation: fadeInUp 0.9s ease;
 }
 
-.chat-header h1 {
-    margin: 0;
-    font-size: 2em;
-    font-weight: 700;
-    color: #ffffff;
+/* fallback para navegadores SIN backdrop-filter */
+@supports not ((backdrop-filter: blur(16px)) or (-webkit-backdrop-filter: blur(16px))) {
+    .login-card {
+        background: rgba(255, 255, 255, 0.5);
+    }
 }
 
-.subtitle {
-    margin-top: 5px;
-    font-size: 1em;
-    opacity: 0.85;
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(25px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 
-/* ======= CUERPO DEL CHAT (CON SCROLL) ======= */
-.chat-box {
-    flex: 1;
-    padding: 18px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    scroll-behavior: smooth;
-}
-
-/* Scroll bonito */
-.chat-box::-webkit-scrollbar {
-    width: 6px;
-}
-.chat-box::-webkit-scrollbar-thumb {
-    background-color: rgba(255,255,255,0.3);
-    border-radius: 4px;
-}
-.chat-box::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(255,255,255,0.5);
-}
-
-/* ======= BURBUJAS ======= */
-.message {
-    padding: 12px 16px;
-    border-radius: 16px;
-    max-width: 80%;
-    width: fit-content;
-    font-size: 1em;
+.logo {
+    font-size: 35px;
+    margin-bottom: 20px;
     color: white;
-    line-height: 1.5em;
-    border: 1px solid rgba(255,255,255,0.2);
+    text-shadow: 0 0 10px #d7b1ff;
 }
 
-/*** Usuario ***/
-.user {
-    align-self: flex-end;
-    background: rgba(186, 104, 200, 0.45);
-}
-
-/*** Mindra ***/
-.mindra {
-    align-self: flex-start;
-    background: rgba(255, 255, 255, 0.20);
-}
-
-/* ======= FORMULARIO ======= */
-.chat-form {
-    flex-shrink: 0;
-    display: flex;
-    padding: 14px;
-    background: rgba(255,255,255,0.1);
-    border-top: 1px solid rgba(255,255,255,0.2);
-    gap: 10px;
-}
-
-/* ======= INPUT DE TEXTO ======= */
-#user-input {
-    flex: 1;
-    padding: 14px;
-    border-radius: 16px;
-    border: 2px solid white;
-    outline: none;
-    background: rgba(255,255,255,0.18);
-    color: white;
-    font-size: 1.1em;
-}
-
-#user-input::placeholder {
-    color: rgba(255,255,255,0.7);
-}
-
-/* ======= BOTÓN ENVIAR ======= */
-.send-btn {
-    width: 60px;
+/* --- INPUTS --- */
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
     border: none;
-    border-radius: 14px;
-    cursor: pointer;
-    font-size: 1.4em;
-    background: rgba(255,255,255,0.25);
+    outline: none;
+    font-size: 15px;
+    background: rgba(255, 255, 255, 0.4);
+    color: #4a006e;
+
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+}
+
+/* --- BUTTONS --- */
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    background: #8a2be2;
+    border: none;
     color: white;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
     transition: 0.3s ease;
 }
+.btn-primary:hover {
+    background: #9f47ff;
+    transform: scale(1.03);
+}
 
-.send-btn:hover {
-    background: rgba(255,255,255,0.45);
+.btn-secondary {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+.btn-secondary:hover {
+    background: rgba(255,255,255,0.3);
+    transform: scale(1.03);
+}
+
+.error {
+    margin-top: 10px;
+    color: rgb(255, 130, 130);
+    font-size: 14px;
 }
